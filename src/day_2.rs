@@ -2,8 +2,6 @@ use crate::Error;
 
 use rayon::prelude::*;
 use regex::Regex;
-use std::fs::File;
-use std::io::{BufRead, BufReader};
 
 struct Line {
     c: char,
@@ -14,9 +12,7 @@ struct Line {
 
 fn read() -> Result<Vec<Line>, Error> {
     let re = Regex::new(r"^(\d+)-(\d+) (.): (.+)$")?;
-    let rs = BufReader::new(File::open("resources/input_2.txt")?)
-        .lines()
-        .filter_map(Result::ok)
+    let rs = crate::utils::read("resources/input_2.txt")?
         .map(|line| {
             let cap = re.captures(&line).unwrap();
             Line {

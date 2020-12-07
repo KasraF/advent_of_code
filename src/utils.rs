@@ -1,5 +1,7 @@
 use std::error::Error;
 use std::fmt::Display;
+use std::fs::File;
+use std::io::{BufRead, BufReader};
 
 #[derive(Debug)]
 pub struct AdventError {
@@ -30,4 +32,11 @@ impl Error for AdventError {
     fn source(&self) -> Option<&(dyn Error + 'static)> {
         None
     }
+}
+
+pub fn read(filename: &str) -> Result<impl Iterator<Item = String>, crate::Error> {
+    let rs = BufReader::new(File::open(filename)?)
+        .lines()
+        .filter_map(Result::ok);
+    Ok(rs)
 }

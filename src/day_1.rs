@@ -1,13 +1,8 @@
 use crate::utils::AdventError;
 use crate::Error;
 
-use std::fs::File;
-use std::io::{BufRead, BufReader};
-
 fn read() -> Result<Vec<u32>, Error> {
-    Ok(BufReader::new(File::open("resources/input_1.txt")?)
-        .lines()
-        .filter_map(Result::ok)
+    Ok(crate::utils::read("resources/input_1.txt")?
         .map(|line| line.parse().unwrap())
         .collect())
 }
