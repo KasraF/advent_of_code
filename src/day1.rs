@@ -9,9 +9,8 @@ fn count_increasing<T: PartialOrd>(v: &[T]) -> usize {
 
 pub fn main(file: Option<String>) -> Result<(String, String), Error> {
     let path = file.unwrap_or_else(|| "resources/day1.txt".to_string());
-    let lines: Vec<i32> = readlines(path)?
-        .iter()
-        .map(|l| l.parse::<i32>().unwrap()) // TODO Is there a good clean way to handle this?
+    let lines: Vec<i32> = readlines(&path)?
+        .map(|l| l.unwrap().parse::<i32>().unwrap())
         .collect();
 
     let part1: usize = count_increasing(&lines);
