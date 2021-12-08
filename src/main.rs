@@ -4,6 +4,7 @@ mod day1;
 mod day2;
 mod day3;
 mod day4;
+mod day5;
 mod utils;
 
 fn main() -> Result<(), Error> {
@@ -12,6 +13,7 @@ fn main() -> Result<(), Error> {
         crate::day2::main,
         crate::day3::main,
         crate::day4::main,
+        crate::day5::main,
     ];
     let mut args = std::env::args();
     args.next(); // Skip the program name
