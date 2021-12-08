@@ -3,10 +3,16 @@ use crate::utils::Error;
 mod day1;
 mod day2;
 mod day3;
+mod day4;
 mod utils;
 
 fn main() -> Result<(), Error> {
-    let solutions = [crate::day1::main, crate::day2::main, crate::day3::main];
+    let solutions = [
+        crate::day1::main,
+        crate::day2::main,
+        crate::day3::main,
+        crate::day4::main,
+    ];
     let mut args = std::env::args();
     args.next(); // Skip the program name
     let day = args
