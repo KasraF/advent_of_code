@@ -1,28 +1,52 @@
-use crate::utils::{readlines, Error};
+use crate::Error;
+use regex::Regex;
+use smallvec::SmallVec;
+use std::{fs::File, io::BufRead, io::BufReader};
 
-fn count_increasing<T: PartialOrd>(v: &[T]) -> usize {
-    v.iter()
-        .zip(v[1..].iter())
-        .map(|(a, b)| if a < b { 1 } else { 0 })
-        .sum()
+fn parse_digit(d: &str) -> Result<u32, Error> {
+    match d {
+        "one" | "1" => Ok(1),
+        "two" | "2" => Ok(2),
+        "three" | "3" => Ok(3),
+        "four" | "4" => Ok(4),
+        "five" | "5" => Ok(5),
+        "six" | "6" => Ok(6),
+        "seven" | "7" => Ok(7),
+        "eight" | "8" => Ok(8),
+        "nine" | "9" => Ok(9),
+        _ => Err(format!("Not a valid digit: {d}").into()),
+    }
 }
 
-pub fn main(file: Option<String>) -> Result<(String, String), Error> {
-    let path = file.unwrap_or_else(|| "resources/day1.txt".to_string());
-    let lines: Vec<i32> = readlines(&path)?
-        .map(|l| l.unwrap().parse::<i32>().unwrap())
+/// Parse a given line.
+/// TODO Good excuse to learn nom here?
+fn parse_digits(line: &str) -> u32 {
+    let digit_rx =
+        Regex::new(r"(\d)|(one)|(two)|(three)|(four)|(five)|(six)|(seven)|(eight)|(nine)").unwrap();
+    let matches: SmallVec<[&str; 8]> = digit_rx
+        .captures_iter(line)
+        .map(|x| x.iter().next().unwrap().unwrap().as_str())
         .collect();
+    let first = parse_digit(matches[0]).unwrap();
+    let last = parse_digit(matches[matches.len() - 1]).unwrap();
+    println!("{line}: {matches:?} -> {}", first * 10 + last);
+    first * 10 + last
+}
 
-    let part1: usize = count_increasing(&lines);
+pub fn main() -> Result<(), Error> {
+    let rs: u32 = BufReader::new(File::open("inputs/day1.txt")?)
+        .lines()
+        .filter(|line| match line {
+            Ok(_) => true,
+            Err(e) => {
+                eprintln!("Failed to read line: {e}");
+                false
+            }
+        })
+        .map(|line| parse_digits(&line.unwrap()))
+        .sum();
 
-    let part2_windows: Vec<i32> = lines
-        .iter()
-        .zip(lines[1..].iter())
-        .zip(lines[2..].iter())
-        .map(|((a, b), c)| a + b + c)
-        .collect();
+    println!("Day 1, Answer 1: {rs}");
 
-    let part2: usize = count_increasing(&part2_windows);
-
-    Ok((format!("{}", part1), format!("{}", part2)))
+    Ok(())
 }
