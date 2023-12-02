@@ -58,14 +58,6 @@ fn parse_digits(line: &str) -> u32 {
 
 pub fn main() -> Result<(), Error> {
     let rs: u32 = crate::utils::read_lines(1)?
-        .filter(|line| match line {
-            Ok(line) => !line.is_empty(),
-            Err(e) => {
-                eprintln!("Failed to read line: {e}");
-                false
-            }
-        })
-        .map(|line| line.unwrap())
         .map(|line| parse_digits(&line))
         .sum();
 
