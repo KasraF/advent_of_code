@@ -5,6 +5,20 @@ struct Game {
     rounds: Vec<(u32, u32, u32)>,
 }
 
+impl Game {
+    fn min_cubes(&self) -> (u32, u32, u32) {
+        self.rounds
+            .iter()
+            .fold((0, 0, 0), |(acc_r, acc_g, acc_b), (r, g, b)| {
+                (
+                    u32::max(acc_r, *r),
+                    u32::max(acc_g, *g),
+                    u32::max(acc_b, *b),
+                )
+            })
+    }
+}
+
 impl From<&str> for Game {
     fn from(input: &str) -> Self {
         let input = input.strip_prefix("Game ").expect("Invalid line");
@@ -42,19 +56,11 @@ impl From<&str> for Game {
 pub fn main() -> Result<(), utils::Error> {
     let rs: u32 = utils::read_lines(2)?
         .map(|line| -> Game { line.as_str().into() })
-        .filter_map(|game| {
-            // filter to possible games
-            if game
-                .rounds
-                .into_iter()
-                .all(|(r, g, b)| r <= 12 && g <= 13 && b <= 14)
-            {
-                Some(game.id)
-            } else {
-                None
-            }
+        .map(|game| {
+            let (r, g, b) = game.min_cubes();
+            r * g * b
         })
         .sum();
-    println!("Day 2, Answer 1: {rs}");
+    println!("Day 2, Answer 2: {rs}");
     Ok(())
 }
