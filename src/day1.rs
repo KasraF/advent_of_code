@@ -1,5 +1,4 @@
-use crate::Error;
-use std::{fs::File, io::BufRead, io::BufReader};
+use crate::utils::Error;
 
 #[inline]
 fn nom(s: &str, target: &str) -> bool {
@@ -58,8 +57,7 @@ fn parse_digits(line: &str) -> u32 {
 }
 
 pub fn main() -> Result<(), Error> {
-    let rs: u32 = BufReader::new(File::open("inputs/day1.txt")?)
-        .lines()
+    let rs: u32 = crate::utils::read_lines(1)?
         .filter(|line| match line {
             Ok(line) => !line.is_empty(),
             Err(e) => {
