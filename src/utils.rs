@@ -10,7 +10,16 @@ pub fn read_lines(day: u16) -> Result<Lines, Error> {
     let iter = BufReader::new(File::open(&path)?)
         .lines()
         .filter_map(|line| match line {
-            Ok(l) => Some(l),
+            Ok(l) => {
+                let trimmed = l.trim();
+                if trimmed.is_empty() {
+                    None
+                } else if l.len() == trimmed.len() {
+                    Some(l)
+                } else {
+                    Some(trimmed.to_string())
+                }
+            }
             Err(e) => {
                 eprintln!("Failed to read line: {e}");
                 None
