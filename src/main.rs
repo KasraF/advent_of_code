@@ -2,6 +2,7 @@ use std::env;
 
 mod day1;
 mod day2;
+mod day3;
 mod utils;
 
 fn main() -> Result<(), utils::Error> {
@@ -9,6 +10,7 @@ fn main() -> Result<(), utils::Error> {
         Some(arg) => match arg.as_str() {
             "1" => day1::main(),
             "2" => day2::main(),
+            "3" => day3::main(),
             n => Err(format!("Day not yet implemented: {n}").into()),
         },
         None => Err("Please provide the AoC day to run.".into()),
