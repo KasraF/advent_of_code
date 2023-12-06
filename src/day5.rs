@@ -1,3 +1,4 @@
+use rayon::prelude::*;
 use std::collections::HashMap;
 use std::str::FromStr;
 
@@ -107,18 +108,39 @@ impl Almanac {
     }
 }
 
+fn min_location(start: u32, len: u32, maps: &HashMap<Item, (Item, Almanac)>) -> u32 {
+    (start..(start + len))
+        .into_par_iter()
+        .map(|seed| {
+            let (mut item, mut src) = (Item::Seed, seed);
+            while item != Item::Location {
+                let (dst, map) = maps.get(&item).unwrap();
+                // print!("{src} ({item:?}) -> ");
+                item = *dst;
+                src = map.lookup(src);
+                // println!("{src} ({item:?})");
+            }
+            src
+        })
+        .min()
+        .unwrap()
+}
+
 pub fn main() -> Result<(), utils::Error> {
     let mut input = utils::read_lines(5)?;
 
-    let seeds: Vec<u32> = input
-        .next()
-        .unwrap()
+    let seeds_string = input.next().unwrap();
+    let mut seeds_iter = seeds_string
         .as_str()
         .strip_prefix("seeds: ")
         .unwrap()
-        .split_whitespace()
-        .map(|seed| seed.parse().unwrap())
-        .collect();
+        .split_whitespace();
+    let mut seeds: Vec<(u32, u32)> = Vec::new();
+
+    while let Some(start) = seeds_iter.next() {
+        let count = seeds_iter.next().unwrap();
+        seeds.push((start.parse()?, count.parse()?));
+    }
 
     let mut maps: HashMap<Item, (Item, Almanac)> = HashMap::with_capacity(7);
     let mut curr = None;
@@ -150,20 +172,11 @@ pub fn main() -> Result<(), utils::Error> {
         panic!("Last almanac map was None?!");
     }
 
-    let mut min_loc = u32::MAX;
-    for seed in seeds {
-        let (mut item, mut src) = (Item::Seed, seed);
-        while item != Item::Location {
-            let (dst, map) = maps.get(&item).unwrap();
-            print!("{src} ({item:?}) -> ");
-            item = *dst;
-            src = map.lookup(src);
-            println!("{src} ({item:?})");
-        }
-        if src < min_loc {
-            min_loc = src;
-        }
-    }
+    let min_loc = seeds
+        .par_iter()
+        .map(|(start, len)| min_location(*start, *len, &maps))
+        .min()
+        .unwrap();
     println!("min loc: {min_loc}");
 
     Ok(())
