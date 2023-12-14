@@ -3,6 +3,8 @@ use std::io::{BufRead, BufReader};
 
 pub type Error = Box<dyn std::error::Error>;
 
+pub type ACResult = Result<(), Error>;
+
 pub type Lines = Box<dyn Iterator<Item = String>>;
 
 pub fn read_lines(day: u16) -> Result<Lines, Error> {
